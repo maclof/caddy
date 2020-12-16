@@ -1,0 +1,55 @@
+{
+  "admin": {
+    "listen": "0.0.0.0:2019"
+  },
+  "apps": {
+    "http": {
+      "http_port": 7070,
+      "servers": {
+        "http": {
+          "listen": [
+            ":7070"
+          ],
+          "routes": [
+            {
+              "match": [
+                {
+                  "path": [
+                    "/hello-world*"
+                  ]
+                }
+              ],
+              "handle": [
+                {
+                  "handler": "static_response",
+                  "body": "<h1>Hello world</h1>",
+                  "metrics_label": "hello-world-static-response"
+                }
+              ]
+            },
+            {
+              "handle": [
+                {
+                  "handler": "reverse_proxy",
+                  "upstreams": [
+                    {
+                      "dial": "127.0.0.1:2019"
+                    }
+                  ],
+                  "metrics_label": "api-reverse-proxy"
+                }
+              ]
+            }
+          ]
+        }
+      }
+    }
+  },
+  "logging": {
+    "logs": {
+      "default": {
+        "level": "DEBUG"
+      }
+    }
+  }
+}

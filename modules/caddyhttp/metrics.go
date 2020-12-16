@@ -8,6 +8,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/caddyserver/caddy/v2"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
 )
@@ -52,7 +53,7 @@ func initHTTPMetrics() {
 	durationBuckets := prometheus.DefBuckets
 	sizeBuckets := prometheus.ExponentialBuckets(256, 4, 8)
 
-	httpLabels := []string{"server", "handler", "code", "method"}
+	httpLabels := []string{"server", "handler", "code", "method", "label"}
 	httpMetrics.requestDuration = promauto.NewHistogramVec(prometheus.HistogramOpts{
 		Namespace: ns,
 		Subsystem: sub,
@@ -96,23 +97,33 @@ func serverNameFromContext(ctx context.Context) string {
 type metricsInstrumentedHandler struct {
 	handler string
 	mh      MiddlewareHandler
+	metrics caddy.ModuleMetrics
 }
 
 func newMetricsInstrumentedHandler(handler string, mh MiddlewareHandler) *metricsInstrumentedHandler {
+	var metrics caddy.ModuleMetrics
+	if mod, ok := mh.(caddy.Module); ok {
+		metrics = mod.CaddyModule().Metrics
+	}
+
 	httpMetrics.init.Do(func() {
 		initHTTPMetrics()
 	})
 
-	return &metricsInstrumentedHandler{handler, mh}
+	return &metricsInstrumentedHandler{handler, mh, metrics}
 }
 
 func (h *metricsInstrumentedHandler) ServeHTTP(w http.ResponseWriter, r *http.Request, next Handler) error {
 	server := serverNameFromContext(r.Context())
 	labels := prometheus.Labels{"server": server, "handler": h.handler}
 	method := strings.ToUpper(r.Method)
-	// the "code" value is set later, but initialized here to eliminate the possibility
+	// the "code" and "label" values are set later, but initialized here to eliminate the possibility
 	// of a panic
-	statusLabels := prometheus.Labels{"server": server, "handler": h.handler, "method": method, "code": ""}
+	statusLabels := prometheus.Labels{"server": server, "handler": h.handler, "method": method, "code": "", "label": ""}
+
+	//if h.metrics != nil {
+		statusLabels["label"] = h.metrics.Label
+	//}
 
 	inFlight := httpMetrics.requestInFlight.With(labels)
 	inFlight.Inc()

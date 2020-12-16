@@ -29,6 +29,8 @@ func init() {
 
 // StaticResponse implements a simple responder for static responses.
 type StaticResponse struct {
+	caddy.ModuleMetrics
+
 	// The HTTP status code to respond with. Can be an integer or,
 	// if needing to use a placeholder, a string.
 	StatusCode WeakString `json:"status_code,omitempty"`
@@ -45,9 +47,10 @@ type StaticResponse struct {
 }
 
 // CaddyModule returns the Caddy module information.
-func (StaticResponse) CaddyModule() caddy.ModuleInfo {
+func (module StaticResponse) CaddyModule() caddy.ModuleInfo {
 	return caddy.ModuleInfo{
 		ID:  "http.handlers.static_response",
+		Metrics: module.ModuleMetrics,
 		New: func() caddy.Module { return new(StaticResponse) },
 	}
 }

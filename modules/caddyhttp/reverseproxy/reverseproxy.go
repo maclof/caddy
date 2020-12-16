@@ -56,6 +56,8 @@ func init() {
 // `{http.reverse_proxy.upstream.max_requests}` | The maximum approximate number of requests allowed to the upstream
 // `{http.reverse_proxy.upstream.fails}` | The number of recent failed requests to the upstream
 type Handler struct {
+	caddy.ModuleMetrics
+
 	// Configures the method of transport for the proxy. A transport
 	// is what performs the actual "round trip" to the backend.
 	// The default transport is plaintext HTTP.
@@ -118,9 +120,10 @@ type Handler struct {
 }
 
 // CaddyModule returns the Caddy module information.
-func (Handler) CaddyModule() caddy.ModuleInfo {
+func (handler Handler) CaddyModule() caddy.ModuleInfo {
 	return caddy.ModuleInfo{
 		ID:  "http.handlers.reverse_proxy",
+		Metrics: handler.ModuleMetrics,
 		New: func() caddy.Module { return new(Handler) },
 	}
 }

@@ -63,6 +63,8 @@ type ModuleInfo struct {
 	// must be unique and properly namespaced.
 	ID ModuleID
 
+	Metrics ModuleMetrics
+
 	// New returns a pointer to a new, empty
 	// instance of the module's type. This
 	// method must not have any side-effects,
@@ -72,6 +74,10 @@ type ModuleInfo struct {
 	// in a Provision() method (see the
 	// Provisioner interface).
 	New func() Module
+}
+
+type ModuleMetrics struct {
+	Label string `json:"metrics_label,omitempty"`
 }
 
 // ModuleID is a string that uniquely identifies a Caddy module. A
