@@ -117,6 +117,7 @@ var defaultCurves = []tls.CurveID{
 var SupportedProtocols = map[string]uint16{
 	"tls1.2": tls.VersionTLS12,
 	"tls1.3": tls.VersionTLS13,
+	"tls1.1": tls.VersionTLS11,
 }
 
 // unsupportedProtocols is a map of unsupported protocols.
@@ -125,7 +126,6 @@ var unsupportedProtocols = map[string]uint16{
 	//nolint:staticcheck
 	"ssl3.0": tls.VersionSSL30,
 	"tls1.0": tls.VersionTLS10,
-	"tls1.1": tls.VersionTLS11,
 }
 
 // publicKeyAlgorithms is the map of supported public key algorithms.
