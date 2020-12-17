@@ -41,14 +41,17 @@ func init() {
 // Response header operations can be conditioned upon response status code
 // and/or other header values.
 type Handler struct {
+	caddy.ModuleMetrics
+
 	Request  *HeaderOps     `json:"request,omitempty"`
 	Response *RespHeaderOps `json:"response,omitempty"`
 }
 
 // CaddyModule returns the Caddy module information.
-func (Handler) CaddyModule() caddy.ModuleInfo {
+func (module Handler) CaddyModule() caddy.ModuleInfo {
 	return caddy.ModuleInfo{
 		ID:  "http.handlers.headers",
+		Metrics: module.ModuleMetrics,
 		New: func() caddy.Module { return new(Handler) },
 	}
 }

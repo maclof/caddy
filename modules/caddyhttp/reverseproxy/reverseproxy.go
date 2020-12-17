@@ -120,10 +120,10 @@ type Handler struct {
 }
 
 // CaddyModule returns the Caddy module information.
-func (handler Handler) CaddyModule() caddy.ModuleInfo {
+func (module Handler) CaddyModule() caddy.ModuleInfo {
 	return caddy.ModuleInfo{
 		ID:  "http.handlers.reverse_proxy",
-		Metrics: handler.ModuleMetrics,
+		Metrics: module.ModuleMetrics,
 		New: func() caddy.Module { return new(Handler) },
 	}
 }

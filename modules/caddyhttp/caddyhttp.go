@@ -221,11 +221,14 @@ func StatusCodeMatches(actual, configured int) bool {
 // where the TLS listener should be in a chain of listener wrappers.
 // It should only be used if another listener wrapper must be placed
 // in front of the TLS handshake.
-type tlsPlaceholderWrapper struct{}
+type tlsPlaceholderWrapper struct{
+	caddy.ModuleMetrics
+}
 
-func (tlsPlaceholderWrapper) CaddyModule() caddy.ModuleInfo {
+func (module tlsPlaceholderWrapper) CaddyModule() caddy.ModuleInfo {
 	return caddy.ModuleInfo{
 		ID:  "caddy.listeners.tls",
+		Metrics: module.ModuleMetrics,
 		New: func() caddy.Module { return new(tlsPlaceholderWrapper) },
 	}
 }

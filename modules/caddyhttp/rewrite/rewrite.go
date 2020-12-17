@@ -38,6 +38,8 @@ func init() {
 // result will be. It is atypical to combine the use of setters and
 // modifiers in a single rewrite.
 type Rewrite struct {
+	caddy.ModuleMetrics
+
 	// Changes the request's HTTP verb.
 	Method string `json:"method,omitempty"`
 
@@ -70,9 +72,10 @@ type Rewrite struct {
 }
 
 // CaddyModule returns the Caddy module information.
-func (Rewrite) CaddyModule() caddy.ModuleInfo {
+func (module Rewrite) CaddyModule() caddy.ModuleInfo {
 	return caddy.ModuleInfo{
 		ID:  "http.handlers.rewrite",
+		Metrics: module.ModuleMetrics,
 		New: func() caddy.Module { return new(Rewrite) },
 	}
 }

@@ -47,6 +47,8 @@ func init() {
 // - `{http.matchers.file.remainder}` Set to the remainder
 // of the path if the path was split by `split_path`.
 type MatchFile struct {
+	caddy.ModuleMetrics
+
 	// The root directory, used for creating absolute
 	// file paths, and required when working with
 	// relative paths; if not specified, `{http.vars.root}`
@@ -86,9 +88,10 @@ type MatchFile struct {
 }
 
 // CaddyModule returns the Caddy module information.
-func (MatchFile) CaddyModule() caddy.ModuleInfo {
+func (module MatchFile) CaddyModule() caddy.ModuleInfo {
 	return caddy.ModuleInfo{
 		ID:  "http.matchers.file",
+		Metrics: module.ModuleMetrics,
 		New: func() caddy.Module { return new(MatchFile) },
 	}
 }

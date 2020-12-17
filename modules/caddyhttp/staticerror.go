@@ -34,6 +34,8 @@ func init() {
 // Since this handler does not write a response, the error information
 // is for use by the server to know how to handle the error.
 type StaticError struct {
+	caddy.ModuleMetrics
+
 	// The error message. Optional. Default is no error message.
 	Error string `json:"error,omitempty"`
 
@@ -43,9 +45,10 @@ type StaticError struct {
 }
 
 // CaddyModule returns the Caddy module information.
-func (StaticError) CaddyModule() caddy.ModuleInfo {
+func (module StaticError) CaddyModule() caddy.ModuleInfo {
 	return caddy.ModuleInfo{
 		ID:  "http.handlers.error",
+		Metrics: module.ModuleMetrics,
 		New: func() caddy.Module { return new(StaticError) },
 	}
 }

@@ -210,6 +210,8 @@ func init() {
 // ```
 //
 type Templates struct {
+	caddy.ModuleMetrics
+
 	// The root path from which to load files. Required if template functions
 	// accessing the file system are used (such as include). Default is
 	// `{http.vars.root}` if set, or current working directory otherwise.
@@ -225,9 +227,10 @@ type Templates struct {
 }
 
 // CaddyModule returns the Caddy module information.
-func (Templates) CaddyModule() caddy.ModuleInfo {
+func (module Templates) CaddyModule() caddy.ModuleInfo {
 	return caddy.ModuleInfo{
 		ID:  "http.handlers.templates",
+		Metrics: module.ModuleMetrics,
 		New: func() caddy.Module { return new(Templates) },
 	}
 }

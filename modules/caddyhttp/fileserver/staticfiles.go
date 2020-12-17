@@ -42,6 +42,8 @@ func init() {
 
 // FileServer implements a static file server responder for Caddy.
 type FileServer struct {
+	caddy.ModuleMetrics
+
 	// The path to the root of the site. Default is `{http.vars.root}` if set,
 	// or current working directory otherwise.
 	Root string `json:"root,omitempty"`
@@ -83,9 +85,10 @@ type FileServer struct {
 }
 
 // CaddyModule returns the Caddy module information.
-func (FileServer) CaddyModule() caddy.ModuleInfo {
+func (module FileServer) CaddyModule() caddy.ModuleInfo {
 	return caddy.ModuleInfo{
 		ID:  "http.handlers.file_server",
+		Metrics: module.ModuleMetrics,
 		New: func() caddy.Module { return new(FileServer) },
 	}
 }

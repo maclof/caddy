@@ -26,12 +26,11 @@ import (
 	"strings"
 	"time"
 
+	"github.com/caddyserver/caddy/v2"
 	"github.com/caddyserver/caddy/v2/modules/caddyhttp"
 	"github.com/caddyserver/caddy/v2/modules/caddyhttp/reverseproxy"
 	"github.com/caddyserver/caddy/v2/modules/caddytls"
 	"go.uber.org/zap"
-
-	"github.com/caddyserver/caddy/v2"
 )
 
 func init() {
@@ -40,6 +39,8 @@ func init() {
 
 // Transport facilitates FastCGI communication.
 type Transport struct {
+	caddy.ModuleMetrics
+
 	// Use this directory as the fastcgi root directory. Defaults to the root
 	// directory of the parent virtual host.
 	Root string `json:"root,omitempty"`
@@ -79,9 +80,10 @@ type Transport struct {
 }
 
 // CaddyModule returns the Caddy module information.
-func (Transport) CaddyModule() caddy.ModuleInfo {
+func (module Transport) CaddyModule() caddy.ModuleInfo {
 	return caddy.ModuleInfo{
 		ID:  "http.reverse_proxy.transport.fastcgi",
+		Metrics: module.ModuleMetrics,
 		New: func() caddy.Module { return new(Transport) },
 	}
 }

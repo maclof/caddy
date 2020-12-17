@@ -39,6 +39,8 @@ func init() {
 
 // Encode is a middleware which can encode responses.
 type Encode struct {
+	caddy.ModuleMetrics
+
 	// Selection of compression algorithms to choose from. The best one
 	// will be chosen based on the client's Accept-Encoding header.
 	EncodingsRaw caddy.ModuleMap `json:"encodings,omitempty" caddy:"namespace=http.encoders"`
@@ -53,9 +55,10 @@ type Encode struct {
 }
 
 // CaddyModule returns the Caddy module information.
-func (Encode) CaddyModule() caddy.ModuleInfo {
+func (module Encode) CaddyModule() caddy.ModuleInfo {
 	return caddy.ModuleInfo{
 		ID:  "http.handlers.encode",
+		Metrics: module.ModuleMetrics,
 		New: func() caddy.Module { return new(Encode) },
 	}
 }

@@ -36,6 +36,8 @@ func init() {
 // is only returned to the entry point at the server if there is an
 // additional error returned from the errors routes.
 type Subroute struct {
+	caddy.ModuleMetrics
+
 	// The primary list of routes to compile and execute.
 	Routes RouteList `json:"routes,omitempty"`
 
@@ -45,9 +47,10 @@ type Subroute struct {
 }
 
 // CaddyModule returns the Caddy module information.
-func (Subroute) CaddyModule() caddy.ModuleInfo {
+func (module Subroute) CaddyModule() caddy.ModuleInfo {
 	return caddy.ModuleInfo{
 		ID:  "http.handlers.subroute",
+		Metrics: module.ModuleMetrics,
 		New: func() caddy.Module { return new(Subroute) },
 	}
 }
